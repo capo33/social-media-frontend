@@ -4,12 +4,12 @@ import { toast } from "react-hot-toast";
 
 import Spinner from "../components/Spinner";
 
-import { User } from "../interfaces/AuthInterface";
+import { AuthUser } from "../interfaces/AuthInterface";
 import { register } from "../redux/fetures/Auth/authSlice";
 import { useAppDispatch, useAppSelector } from "../redux/app/store";
 
 const Register = () => {
-  const [formData, setFormData] = useState<User>({
+  const [formData, setFormData] = useState<AuthUser>({
     name: "",
     email: "",
     password: "",

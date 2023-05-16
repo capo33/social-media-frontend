@@ -1,18 +1,14 @@
 export interface User {
+  message: string;
+  token: string;
   name: string;
   email: string;
   password: string;
+  _id?: string;
   avatar?: string;
   followers?: string[];
   following?: string[];
 }
-
-export interface Auth {
-  formData: User;
-  navigate: any;
-  toast?: any;
-}
-
 
 export interface AuthUser {
   email: string;
@@ -20,3 +16,8 @@ export interface AuthUser {
   name?: string;
 }
 
+export interface Auth {
+  formData: AuthUser;
+  navigate: any;
+  toast?: any;
+}

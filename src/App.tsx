@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import Header from "./components/Header";
 
 import "./App.css";
+import Login from "./pages/Login";
+import AddPost from "./components/AddPost";
 // import { ToastContainer } from "react-toastify";
 
 function App() {
@@ -16,7 +18,8 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/register' element={<Register />} />
-        <Route path='/login' element={<div>Login</div>} />
+        <Route path='/login' element={<Login />} />
+        <Route path="/add-post" element={<AddPost />} />
       </Routes>
     </Router>
   );

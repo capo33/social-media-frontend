@@ -1,5 +1,5 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
-import { User } from "../../../interfaces/AuthInterface";
+import { AuthUser } from "../../../interfaces/AuthInterface";
 // import { AuthUser } from "../../../interfaces/AuthInterface";
 
 // interceptors are functions that run before a request is made and after a response is received from the server
@@ -26,9 +26,9 @@ const API = axios.create({
 // });
 
 // register
-const register = async (formData: User) => {
+const register = async (formData: AuthUser) => {
   const response = await API.post(`/api/v1/auth/register`, formData);
-   console.log("response.data", response.data);
+  console.log("response.data", response.data);
 
   if (response.data) {
     localStorage.setItem("user", JSON.stringify(response.data));
@@ -37,11 +37,11 @@ const register = async (formData: User) => {
 };
 
 // login
-const login = async (formData: User) => {
+const login = async (formData: AuthUser) => {
   const response = await API.post(`/api/v1/auth/login`, formData);
-  // if (data) {
-  //   localStorage.setItem("user", JSON.stringify(data));
-  // }
+  if (response.data) {
+    localStorage.setItem("user", JSON.stringify(response.data));
+  }
   return response.data;
 };
 
