@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Post } from "./postSlice";
 
 const API = axios.create({
   baseURL: "http://localhost:5000",
@@ -79,12 +78,30 @@ const unlikePost = async (id: string, token: string) => {
   return response.data;
 };
 
+// comment on a post
+const commentPost = async (comment: string, id: string, token: string) => {
+  const response = await API.put(
+    `/api/v1/posts/comment`,
+    {
+      comment,
+      postId: id,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
 const postServices = {
   getAllPosts,
   createPost,
   deletePost,
   likePost,
   unlikePost,
+  commentPost,
 };
 
 export default postServices;

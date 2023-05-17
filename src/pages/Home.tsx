@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/app/store";
 import {
+  commentPost,
   deletePost,
   getAllPosts,
   likePost,
@@ -12,6 +13,8 @@ import {
 const Home = () => {
   const { posts } = useAppSelector((state) => state.posts);
   const { user } = useAppSelector((state) => state.auth);
+  const [comment, setComment] = React.useState("");
+
   const token = user?.token;
   console.log("user?._id", user?._id);
 
@@ -33,6 +36,25 @@ const Home = () => {
   const handleUnlike = async (id: string) => {
     dispatch(unlikePost({ postID: id, token }));
   };
+
+  const handleComment = (comment: string, id: string) => {
+    dispatch(commentPost({ comment, postID: id, token }));
+  };
+
+  const handleDeleteComment = (postID: string, commentID: string) => {
+    // dispatch(deleteComment({ postID, commentID, token }));
+  };
+  const handleSubmitComment = (
+    e: React.FormEvent<HTMLFormElement>,
+    id: string
+  ) => {
+    e.preventDefault();
+    handleComment(comment, id);
+    setComment("");
+    e.currentTarget.value = "";
+  };
+
+
 
   return (
     <div>
@@ -83,11 +105,7 @@ const Home = () => {
                 <img src={post?.image} alt={post?.title} />
               </div>
               <div className='card-content'>
-                {/* <i className='material-icons' style={{ color: "red" }}>
-                  favorite
-                </i> */}
                 {/* Check if the post is liked by the current user or not then show the unlike button */}
-
                 {post?.likes?.includes(user?._id!) ? (
                   <i
                     className='material-icons'
@@ -105,13 +123,13 @@ const Home = () => {
                     favorite_border
                   </i>
                 )}
+
                 <h6>
                   {post?.likes?.length}{" "}
                   {post?.likes?.length > 1 ? "likes" : "like"}
                 </h6>
                 <h6>{post?.title}</h6>
                 <p>{substring(post?.description)}</p>
-                {/* {post?.comments.postedBy} */}
                 {post?.comments.map((record) => {
                   return (
                     <h6 key={record._id}>
@@ -130,13 +148,28 @@ const Home = () => {
                     </h6>
                   );
                 })}
-                <form
-                // onSubmit={(e) => handleSubmit(e, post?._id)}
-                >
-                  <input type='text' placeholder='add a comment' />
+                <form onSubmit={(e) => handleSubmitComment(e, postID)}>
+                  <input
+                    type='text'
+                    name='comment'
+                    onChange={(e) => setComment(e.target.value)}
+                    value={comment}
+                  />
+                  <input type='hidden' name='postID' value={postID} />
+                  {/* <button
+                    className='btn waves-effect waves-light #64b5f6 blue darken-1'
+                    type='submit'
+                    // onClick={() => {
+                    //   handleComment(comment, postID);
+                    //   setComment("");
+                    // }}
+                  >
+                    comment
+                  </button> */}
                 </form>
                 <button
                   className='btn waves-effect waves-light #64b5f6 blue darken-1'
+                  type='submit'
                   onClick={() => {
                     // deleteComment(post?._id, post?.comments._id);
                   }}

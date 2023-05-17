@@ -114,7 +114,7 @@ export const likePost = createAsyncThunk(
   async ({ postID, token }: LikePost, thunkAPI) => {
     try {
       const response = await postServices.likePost(postID, token);
-      thunkAPI.dispatch(getAllPosts( ));
+      thunkAPI.dispatch(getAllPosts());
       return response;
     } catch (error: unknown | any) {
       const message =
@@ -138,6 +138,31 @@ export const unlikePost = createAsyncThunk(
   async ({ postID, token }: UnlikePost, thunkAPI) => {
     try {
       const response = await postServices.unlikePost(postID, token);
+      thunkAPI.dispatch(getAllPosts());
+      return response;
+    } catch (error: unknown | any) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// comment on a post
+interface CommentPost {
+  postID: string;
+  comment: string;
+  token: any;
+}
+export const commentPost = createAsyncThunk(
+  "posts/commentPost",
+  async ({ comment, postID, token }: CommentPost, thunkAPI) => {
+    try {
+      const response = await postServices.commentPost(comment, postID, token);
       thunkAPI.dispatch(getAllPosts());
       return response;
     } catch (error: unknown | any) {
@@ -221,10 +246,6 @@ const postSlice = createSlice({
     builder.addCase(deletePost.fulfilled, (state, action) => {
       state.isLoading = false;
       state.isSuccess = true;
-      // const {arg} = action.meta;
-      // if(arg){
-      //   state.posts = state.posts.filter((post: Post) => post?._id !== arg?.id);
-      // }
       state.posts = state.posts.filter(
         (post: Post) => post?._id !== action.payload?.data?._id
       );
@@ -272,6 +293,27 @@ const postSlice = createSlice({
       state.posts = newdata;
     });
     builder.addCase(unlikePost.rejected, (state, { payload }) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.message = payload as string;
+    });
+
+    // comment on a post
+    builder.addCase(commentPost.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(commentPost.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      const newdata = state.posts.map((post: Post) => {
+        if (post?._id === action.payload?.data?._id) {
+          return action.payload?.data;
+        }
+        return post;
+      });
+      state.posts = newdata;
+    });
+    builder.addCase(commentPost.rejected, (state, { payload }) => {
       state.isLoading = false;
       state.isError = true;
       state.message = payload as string;
