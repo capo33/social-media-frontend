@@ -35,8 +35,8 @@ export interface Post {
 
 
 export interface userProfileData {
-  user: User;
-  posts: Post[];
+  user?: User;
+  posts?: Post[];
 }
 
 export interface AuthUser {

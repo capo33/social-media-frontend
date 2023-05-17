@@ -1,26 +1,32 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../redux/app/store";
-import { userProfile } from "../redux/fetures/Users/userSlice";
+import { follow, userProfile } from "../redux/fetures/Users/userSlice";
 import { getAllPosts } from "../redux/fetures/Posts/postSlice";
 
 const UserProfile = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAppSelector((state) => state.user);
+  const { user: me } = useAppSelector((state) => state.auth);
   const { posts } = useAppSelector((state) => state.posts);
-
+ 
   const dispatch = useAppDispatch();
-  console.log("user?.name", user?.user?.name);
-  console.log("posts", posts);
-  const token = user?.user?.token;
+  console.log("user?.user-id", user);
+  console.log("me-id", me?.token);
+  
+  console.log("id-params", id);
+   const token = user?.user?.token;
   // console.log(token);
 
-  console.log(id);
-  useEffect(() => {
+   useEffect(() => {
     // fetch user data
     dispatch(getAllPosts());
     dispatch(userProfile({ id, token }));
   }, [dispatch, id, token]);
+
+  const handleFollow = (id: string) => {
+    dispatch(follow({ id, token }));
+  };
   return (
     <div
       style={{
@@ -66,14 +72,15 @@ const UserProfile = () => {
             <h6>{user?.user?.followers?.length} followers</h6>
             <h6>{user?.user?.following?.length} following</h6>
           </div>
-          {/* {showFollow ? (
           <button
             className='btn waves-effect waves-light #64b5f6 blue darken-1'
             style={{ margin: "10px" }}
-            onClick={() => followUser()}
+            onClick={() => dispatch(follow({followId: id, userId: me?._id, token: me?.token}))}
+            
           >
             Follow
           </button>
+          {/* {showFollow ? (
         ) : (
           <button
             className='btn waves-effect waves-light #64b5f6 blue darken-1'

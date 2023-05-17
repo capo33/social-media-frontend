@@ -112,6 +112,17 @@ const deleteCommentPost = async (
   return response.data;
 };
 
+// my posts
+const getMyPosts = async (token: string) => {
+  const response = await API.get(`/api/v1/posts/my-posts`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+
 const postServices = {
   getAllPosts,
   createPost,
@@ -120,6 +131,7 @@ const postServices = {
   unlikePost,
   commentPost,
   deleteCommentPost,
+  getMyPosts,
 };
 
 export default postServices;

@@ -46,6 +46,54 @@ export const userProfile = createAsyncThunk(
   }
 );
 
+// follow
+interface Follow {
+  id: string;
+  token: string;
+  followId: string;
+}
+export const follow = createAsyncThunk(
+  "auth/follow",
+  async ({ followId,userId, token }: any, { rejectWithValue }) => {
+    try {
+      const response = await userServices.followUser(followId,userId, token);
+      return response;
+    } catch (error: unknown | any) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return rejectWithValue(message);
+    }
+  }
+);
+
+// unfollow
+interface Unfollow {
+  id: string;
+  token: string;
+  unfollowId: string;
+}
+export const unfollow = createAsyncThunk(
+  "auth/unfollow",
+  async ({ unfollowId, token }: any, { rejectWithValue }) => {
+    try {
+      const response = await userServices.unfollowUser(unfollowId, token);
+      return response;
+    } catch (error: unknown | any) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return rejectWithValue(message);
+    }
+  }
+);
+
 export const userSlice = createSlice({
   name: "user",
   initialState,
@@ -65,6 +113,33 @@ export const userSlice = createSlice({
       state.user = payload;
     });
     builder.addCase(userProfile.rejected, (state, { payload }) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.message = payload as string;
+    });
+
+    // follow
+    builder.addCase(follow.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(follow.fulfilled, (state, { payload }) => {
+      state.isLoading = false;
+      state.user = payload;
+      // if (state.user) {
+      //   state.user.user?.followers?.push(payload._id as string);
+      // }
+      // const newdata = state.user?.posts?.map((post: Post) => {
+      //   if (post?._id === payload?.data?._id) {
+      //     return payload?.data;
+      //   }
+
+      //   return post;
+      // });
+      
+      // state.user!.posts = newdata as Post[];
+      // state.user!.user!.followers!.push(payload._id as string);
+     });
+    builder.addCase(follow.rejected, (state, { payload }) => {
       state.isLoading = false;
       state.isError = true;
       state.message = payload as string;

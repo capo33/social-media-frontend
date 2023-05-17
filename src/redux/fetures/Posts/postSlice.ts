@@ -233,6 +233,27 @@ export const deletePost = createAsyncThunk(
   }
 );
 
+// my posts
+export const myPosts = createAsyncThunk(
+  "posts/myPosts",
+  async (token:any, { rejectWithValue }) => {
+    try {
+      const response = await postServices.getMyPosts(token);
+
+      return response;
+    } catch (error: unknown | any) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return rejectWithValue(message);
+    }
+  }
+);
+
 const postSlice = createSlice({
   name: "posts",
   initialState,
@@ -364,6 +385,21 @@ const postSlice = createSlice({
       state.posts = newdata;
     });
     builder.addCase(deleteCommentPost.rejected, (state, { payload }) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.message = payload as string;
+    });
+
+    // get my posts
+    builder.addCase(myPosts.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(myPosts.fulfilled, (state, { payload }) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.posts = payload;
+    });
+    builder.addCase(myPosts.rejected, (state, { payload }) => {
       state.isLoading = false;
       state.isError = true;
       state.message = payload as string;

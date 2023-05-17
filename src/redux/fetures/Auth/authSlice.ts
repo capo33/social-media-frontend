@@ -84,7 +84,7 @@ interface UserProfile {
 }
 export const userProfile = createAsyncThunk(
   "auth/userProfile",
-  async ({ id, token }: UserProfile, { rejectWithValue }) => {
+  async ({ id, token }: any, { rejectWithValue }) => {
     try {
       const response = await authServices.getProfile(id, token);
       return response;

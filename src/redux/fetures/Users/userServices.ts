@@ -17,11 +17,12 @@ const getProfile = async (id: string, token: string) => {
 };
 
 // follow a user
-const followUser = async (followId: string, token: string) => {
+const followUser = async (followId: string, userId:string, token: string) => {
   const response = await API.put(
     `/api/v1/users/follow`,
     {
-      userId: followId,
+       followId,
+        userId
     },
     {
       headers: {
