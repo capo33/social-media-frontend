@@ -1,6 +1,7 @@
- import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { Auth, User } from "../../../interfaces/AuthInterface";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+
 import authServices from "./authServices";
+import { Auth, User } from "../../../interfaces/AuthInterface";
 
 const user = JSON.parse(localStorage.getItem("user") as string);
 
@@ -20,6 +21,7 @@ const initialState: AccountState = {
   message: "",
 };
 
+// *************************** Auth *************************** //
 // register
 export const register = createAsyncThunk(
   "auth/register",
@@ -27,7 +29,7 @@ export const register = createAsyncThunk(
     try {
       const response = await authServices.register(formData);
       console.log("response.data", response);
-      
+
       navigate("/");
       toast.success(response?.message);
       if (response) {
@@ -46,19 +48,11 @@ export const register = createAsyncThunk(
     }
   }
 );
-//     catch (error: unknown | any) {
-//       toast.error(error.response.data.message);
-//       console.log("error.response.data.message", error.response.data.message);
-
-//       return rejectWithValue(error.response.data.message);
-//     }
-//   }
-// );
 
 // login
 export const login = createAsyncThunk(
   "auth/login",
-  async ({ formData,  toast, navigate }: Auth, { rejectWithValue }) => {
+  async ({ formData, toast, navigate }: Auth, { rejectWithValue }) => {
     try {
       const response = await authServices.login(formData);
       navigate("/");
@@ -81,6 +75,31 @@ export const login = createAsyncThunk(
 export const logout = createAsyncThunk("auth/logout", async () => {
   authServices.logout();
 });
+
+// *************************** User *************************** //
+// userProfile
+interface UserProfile {
+  id: string;
+  token: string;
+}
+export const userProfile = createAsyncThunk(
+  "auth/userProfile",
+  async ({ id, token }: UserProfile, { rejectWithValue }) => {
+    try {
+      const response = await authServices.getProfile(id, token);
+      return response;
+    } catch (error: unknown | any) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return rejectWithValue(message);
+    }
+  }
+);
+
 
 const authSlice = createSlice({
   name: "auth",

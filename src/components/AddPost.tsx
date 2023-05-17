@@ -15,6 +15,7 @@ const AddPost = () => {
     title: "",
     description: "",
   });
+  
   const [image, setImage] = useState<string>("");
   const [url, setUrl] = useState("");
 

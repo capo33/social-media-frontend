@@ -21,7 +21,7 @@ export interface Post {
 
   postedBy?: {
     name: string;
-    _id: string;
+    _id?: string;
   };
 }
 
@@ -177,6 +177,35 @@ export const commentPost = createAsyncThunk(
   }
 );
 
+// uncomment on a post
+interface UnCommentPost {
+  postId: string;
+  commentId: string;
+  token: any;
+}
+export const deleteCommentPost = createAsyncThunk(
+  "posts/deleteCommentPost",
+  async ({ postId, commentId, token }: UnCommentPost, thunkAPI) => {
+    try {
+      const response = await postServices.deleteCommentPost(
+        postId,
+        commentId,
+        token
+      );
+      thunkAPI.dispatch(getAllPosts());
+      return response;
+    } catch (error: unknown | any) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 interface DeletePost {
   postID: string;
   token: any;
@@ -314,6 +343,27 @@ const postSlice = createSlice({
       state.posts = newdata;
     });
     builder.addCase(commentPost.rejected, (state, { payload }) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.message = payload as string;
+    });
+
+    // uncomment on a post
+    builder.addCase(deleteCommentPost.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(deleteCommentPost.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      const newdata = state.posts.map((post: Post) => {
+        if (post?._id === action.payload?.data?._id) {
+          return action.payload?.data;
+        }
+        return post;
+      });
+      state.posts = newdata;
+    });
+    builder.addCase(deleteCommentPost.rejected, (state, { payload }) => {
       state.isLoading = false;
       state.isError = true;
       state.message = payload as string;

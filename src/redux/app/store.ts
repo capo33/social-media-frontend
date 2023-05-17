@@ -3,11 +3,13 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 import authReducer from "../fetures/Auth/authSlice";
 import postReducer from "../fetures/Posts/postSlice";
+import userReducer from "../fetures/Users/userSlice";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     posts: postReducer,
+    user: userReducer,
   },
 });
 

@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/app/store";
 import {
   commentPost,
+  deleteCommentPost,
   deletePost,
   getAllPosts,
   likePost,
@@ -26,7 +27,7 @@ const Home = () => {
   }, [dispatch]);
 
   const substring = (str: string) => {
-    return str?.length > 10 ? str.substring(0, 80) + "..." : str;
+    return str?.length > 10 ? str.substring(0, 30) + "..." : str;
   };
 
   const handleLike = async (id: string) => {
@@ -41,8 +42,8 @@ const Home = () => {
     dispatch(commentPost({ comment, postID: id, token }));
   };
 
-  const handleDeleteComment = (postID: string, commentID: string) => {
-    // dispatch(deleteComment({ postID, commentID, token }));
+  const handleDeleteComment = (postId: string, commentId: string) => {
+    dispatch(deleteCommentPost({ postId, commentId, token }));
   };
   const handleSubmitComment = (
     e: React.FormEvent<HTMLFormElement>,
@@ -54,8 +55,6 @@ const Home = () => {
     e.currentTarget.value = "";
   };
 
-
-
   return (
     <div>
       <h1>Home</h1>
@@ -65,13 +64,12 @@ const Home = () => {
 
           return (
             <div className='card home-card' key={post?._id}>
-              {/* <div className='card-content' > */}
               <h5>
                 <Link
                   to={
                     post?.postedBy?._id !== user?._id
                       ? `/profile/${post?.postedBy?._id}`
-                      : `/profile`
+                      : "/profile"
                   }
                 >
                   {post?.postedBy?.name}
@@ -133,28 +131,48 @@ const Home = () => {
                 {post?.comments.map((record) => {
                   return (
                     <h6 key={record._id}>
-                      <span
+                      <div
                         style={{
-                          fontWeight: "500",
-                          color: "blue",
-                          fontSize: "1.1rem",
-                          fontFamily: "cursive",
-                          marginRight: "0.5rem",
+                          cursor: "pointer",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
                         }}
                       >
-                        {record?.postedBy?.name}
-                      </span>{" "}
-                      {record.comment}
+                        <div>
+                          <p>
+                            <span
+                              style={{
+                                marginRight: "1rem ",
+                              }}
+                            >
+                              {record?.postedBy?.name}
+                            </span>
+                            <span>{substring(record.comment)}</span>
+                          </p>
+                        </div>
+                        <i
+                          className='material-icons'
+                          onClick={() =>
+                            handleDeleteComment(postID, record._id as string)
+                          }
+                        >
+                          delete_forever
+                        </i>
+                      </div>
                     </h6>
                   );
                 })}
+
                 <form onSubmit={(e) => handleSubmitComment(e, postID)}>
                   <input
                     type='text'
                     name='comment'
                     onChange={(e) => setComment(e.target.value)}
                     value={comment}
+                    onClick={() => console.log("clicked")}
                   />
+
                   <input type='hidden' name='postID' value={postID} />
                   {/* <button
                     className='btn waves-effect waves-light #64b5f6 blue darken-1'
@@ -166,16 +184,18 @@ const Home = () => {
                   >
                     comment
                   </button> */}
-                </form>
-                <button
+                  {/* <button
                   className='btn waves-effect waves-light #64b5f6 blue darken-1'
                   type='submit'
                   onClick={() => {
+                    handleComment(comment, postID);
                     // deleteComment(post?._id, post?.comments._id);
                   }}
                 >
                   delete comment
-                </button>
+                </button> */}
+                  {/* delete comment */}
+                </form>
               </div>
             </div>
           );

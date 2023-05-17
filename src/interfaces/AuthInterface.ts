@@ -1,3 +1,4 @@
+ 
 export interface User {
   message: string;
   token: string;
@@ -8,6 +9,34 @@ export interface User {
   avatar?: string;
   followers?: string[];
   following?: string[];
+}
+interface comments {
+  comment: string;
+  postedBy?: {
+    name: string;
+    _id: string;
+  };
+  _id?: string;
+}
+
+export interface Post {
+  _id: string;
+  title: string;
+  description: string;
+  image: string;
+  likes: string[];
+  comments: comments[];
+
+  postedBy?: {
+    name: string;
+    _id?: string;
+  };
+}
+
+
+export interface userProfileData {
+  user: User;
+  posts: Post[];
 }
 
 export interface AuthUser {

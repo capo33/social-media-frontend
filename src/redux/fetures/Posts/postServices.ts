@@ -95,6 +95,23 @@ const commentPost = async (comment: string, id: string, token: string) => {
   return response.data;
 };
 
+// deleteComment a post
+const deleteCommentPost = async (
+  postId: string,
+  commentId: string,
+  token: string
+) => {
+  const response = await API.delete(
+    `/api/v1/posts/comment/${postId}/${commentId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
 const postServices = {
   getAllPosts,
   createPost,
@@ -102,6 +119,7 @@ const postServices = {
   likePost,
   unlikePost,
   commentPost,
+  deleteCommentPost,
 };
 
 export default postServices;
