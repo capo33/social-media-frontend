@@ -4,14 +4,14 @@ import postServices from "./postServices";
 
 interface comments {
   comment: string;
-  postedBy: {
+  postedBy?: {
     name: string;
     _id: string;
   };
   _id?: string;
 }
 
-interface Post {
+export interface Post {
   _id: string;
   title: string;
   description: string;
@@ -19,7 +19,7 @@ interface Post {
   likes: string[];
   comments: comments[];
 
-  postedBy: {
+  postedBy?: {
     name: string;
     _id: string;
   };
@@ -41,6 +41,18 @@ const initialState: PostState = {
   isLoading: false,
   message: "",
 };
+
+interface PostPayload {
+  likes?: string[];
+  comments?: comments[];
+  postID?: string;
+  title?: string;
+  description?: string;
+  image?: string;
+  token?: string;
+  toast?: any;
+  navigate?: any;
+}
 
 // get all posts
 export const getAllPosts = createAsyncThunk(
@@ -87,8 +99,82 @@ export const createPost = createAsyncThunk(
         error.message ||
         error.toString();
       toast.error(message);
-      toast.error("Something went wrong");
       return rejectWithValue(message);
+    }
+  }
+);
+
+// like a post
+interface LikePost {
+  postID: string;
+  token: any;
+}
+export const likePost = createAsyncThunk(
+  "posts/likePost",
+  async ({ postID, token }: LikePost, thunkAPI) => {
+    try {
+      const response = await postServices.likePost(postID, token);
+      thunkAPI.dispatch(getAllPosts( ));
+      return response;
+    } catch (error: unknown | any) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// unlike a post
+interface UnlikePost {
+  postID: string;
+  token: any;
+}
+export const unlikePost = createAsyncThunk(
+  "posts/unlikePost",
+  async ({ postID, token }: UnlikePost, thunkAPI) => {
+    try {
+      const response = await postServices.unlikePost(postID, token);
+      thunkAPI.dispatch(getAllPosts());
+      return response;
+    } catch (error: unknown | any) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+interface DeletePost {
+  postID: string;
+  token: any;
+  toast: any;
+}
+// delete a post
+export const deletePost = createAsyncThunk(
+  "posts/deletePost",
+  async ({ postID, token, toast }: DeletePost, thunkAPI) => {
+    try {
+      const response = await postServices.deletePost(postID, token);
+      toast.success(response?.message);
+      thunkAPI.dispatch(getAllPosts());
+      return response;
+    } catch (error: unknown | any) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      toast.error(message);
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -98,6 +184,7 @@ const postSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    // get all posts
     builder.addCase(getAllPosts.pending, (state) => {
       state.isLoading = true;
     });
@@ -112,6 +199,7 @@ const postSlice = createSlice({
       state.message = payload as string;
     });
 
+    // delete a post
     builder.addCase(createPost.pending, (state) => {
       state.isLoading = true;
     });
@@ -121,6 +209,69 @@ const postSlice = createSlice({
       state.posts = payload.data;
     });
     builder.addCase(createPost.rejected, (state, { payload }) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.message = payload as string;
+    });
+
+    // delete a post
+    builder.addCase(deletePost.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(deletePost.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      // const {arg} = action.meta;
+      // if(arg){
+      //   state.posts = state.posts.filter((post: Post) => post?._id !== arg?.id);
+      // }
+      state.posts = state.posts.filter(
+        (post: Post) => post?._id !== action.payload?.data?._id
+      );
+    });
+    builder.addCase(deletePost.rejected, (state, { payload }) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.message = payload as string;
+    });
+
+    // like a post
+    builder.addCase(likePost.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(likePost.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      const newdata = state.posts.map((post: Post) => {
+        if (post?._id === action.payload?.data?._id) {
+          return action.payload?.data;
+        }
+        return post;
+      });
+      state.posts = newdata;
+    });
+    builder.addCase(likePost.rejected, (state, { payload }) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.message = payload as string;
+    });
+
+    // unlike a post
+    builder.addCase(unlikePost.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(unlikePost.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      const newdata = state.posts.map((post: Post) => {
+        if (post?._id === action.payload?.data?._id) {
+          return action.payload?.data;
+        }
+        return post;
+      });
+      state.posts = newdata;
+    });
+    builder.addCase(unlikePost.rejected, (state, { payload }) => {
       state.isLoading = false;
       state.isError = true;
       state.message = payload as string;

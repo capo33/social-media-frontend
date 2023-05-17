@@ -1,5 +1,5 @@
-import axios, { InternalAxiosRequestConfig } from "axios";
-import { AuthUser } from "../../../interfaces/AuthInterface";
+import axios from "axios";
+import { Post } from "./postSlice";
 
 const API = axios.create({
   baseURL: "http://localhost:5000",
@@ -36,9 +36,55 @@ const createPost = async (
   return response.data;
 };
 
+// delete a post
+const deletePost = async (postID: string, token: string) => {
+  const response = await API.delete(`/api/v1/posts/delete-post/${postID}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+// like a post
+const likePost = async (id: string, token: string) => {
+  const response = await API.put(
+    `/api/v1/posts/like`,
+    {
+      postId: id,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+// unlike a post
+const unlikePost = async (id: string, token: string) => {
+  const response = await API.put(
+    `/api/v1/posts/unlike`,
+    {
+      postId: id,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
 const postServices = {
   getAllPosts,
   createPost,
+  deletePost,
+  likePost,
+  unlikePost,
 };
 
 export default postServices;
