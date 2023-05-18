@@ -2,7 +2,8 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 import userServices from "./userServices";
 import { Auth, User, userProfileData } from "../../../interfaces/AuthInterface";
-import { Post } from "../Posts/postSlice";
+import { Post, getAllPosts } from "../Posts/postSlice";
+import { userProfile as userDataProfile } from "../Auth/authSlice";
 
 const user = JSON.parse(localStorage.getItem("user") as string);
 
@@ -54,9 +55,10 @@ interface Follow {
 }
 export const follow = createAsyncThunk(
   "auth/follow",
-  async ({ followId,userId, token }: any, { rejectWithValue }) => {
+  async ({ followId, userId, token }: any, thunkAPI) => {
     try {
-      const response = await userServices.followUser(followId,userId, token);
+      const response = await userServices.followUser(followId, userId, token);
+      // thunkAPI.dispatch(userDataProfile({ id: userId, token: token } as any));
       return response;
     } catch (error: unknown | any) {
       const message =
@@ -65,7 +67,7 @@ export const follow = createAsyncThunk(
           error.response.data.message) ||
         error.message ||
         error.toString();
-      return rejectWithValue(message);
+      return  thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -78,9 +80,14 @@ interface Unfollow {
 }
 export const unfollow = createAsyncThunk(
   "auth/unfollow",
-  async ({ unfollowId, token }: any, { rejectWithValue }) => {
+  async ({ unfollowId, userId, token }: any, thunkAPI) => {
     try {
-      const response = await userServices.unfollowUser(unfollowId, token);
+      const response = await userServices.unfollowUser(
+        unfollowId,
+        userId,
+        token
+      );
+      // thunkAPI.dispatch(userDataProfile({ id: userId, token: token } as any));
       return response;
     } catch (error: unknown | any) {
       const message =
@@ -89,7 +96,7 @@ export const unfollow = createAsyncThunk(
           error.response.data.message) ||
         error.message ||
         error.toString();
-      return rejectWithValue(message);
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -124,7 +131,41 @@ export const userSlice = createSlice({
     });
     builder.addCase(follow.fulfilled, (state, { payload }) => {
       state.isLoading = false;
-      state.user = payload;
+      // state.user?.user?.followers?.push(payload._id as string);
+      // state.user!.user!.followers!.push(payload._id as string);
+      if (state.user) {
+        state.user.user?.followers?.push(payload._id as string);
+      }
+      const newdata = state.user?.posts?.map((post: Post) => {
+        if (post?._id === payload?.data?._id) {
+          return payload?.data;
+        }
+
+        return post;
+      });
+
+      state.user!.posts = newdata as Post[];
+    });
+    builder.addCase(follow.rejected, (state, { payload }) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.message = payload as string;
+    });
+
+    // unfollow
+    builder.addCase(unfollow.pending, (state) => {
+      state.isLoading = true;
+    }
+    );
+    builder.addCase(unfollow.fulfilled, (state, { payload }) => {
+      state.isLoading = false;
+      // state.user?.user?.followers?.pop();
+      state.user?.user?.followers?.includes(payload._id as string) &&
+        state.user?.user?.followers?.splice(
+          state.user?.user?.followers?.indexOf(payload._id as string),
+          1
+        );
+      state.user!.user!.followers!.pop();
       // if (state.user) {
       //   state.user.user?.followers?.push(payload._id as string);
       // }
@@ -135,15 +176,17 @@ export const userSlice = createSlice({
 
       //   return post;
       // });
-      
+
       // state.user!.posts = newdata as Post[];
       // state.user!.user!.followers!.push(payload._id as string);
-     });
-    builder.addCase(follow.rejected, (state, { payload }) => {
+    }
+    );
+    builder.addCase(unfollow.rejected, (state, { payload }) => {
       state.isLoading = false;
       state.isError = true;
       state.message = payload as string;
-    });
+    }
+    );
   },
 });
 

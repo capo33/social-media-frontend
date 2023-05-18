@@ -34,11 +34,12 @@ const followUser = async (followId: string, userId:string, token: string) => {
 };
 
 // unfollow a user
-const unfollowUser = async (unfollowId: string, token: string) => {
+const unfollowUser = async (unfollowId: string, userId:string, token: string) => {
   const response = await API.put(
     `/api/v1/users/unfollow`,
     {
-      userId: unfollowId,
+      unfollowId,
+      userId
     },
     {
       headers: {
