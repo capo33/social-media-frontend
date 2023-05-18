@@ -10,11 +10,13 @@ import {
   likePost,
   unlikePost,
 } from "../redux/fetures/Posts/postSlice";
+import { Post } from "../interfaces/AuthInterface";
 
 const Home = () => {
   const { posts } = useAppSelector((state) => state.posts);
   const { user } = useAppSelector((state) => state.auth);
   const [comment, setComment] = React.useState("");
+  const [show, setShow] = React.useState(false);
 
   const token = user?.token;
   console.log("user?._id", user?._id);
@@ -55,6 +57,15 @@ const Home = () => {
     e.currentTarget.value = "";
   };
 
+  //  Show and hide comments
+  const toggleComment = () => {
+    if (show) {
+      setShow(false);
+    } else {
+      setShow(true);
+    }
+  };
+
   return (
     <div>
       <h1>Home</h1>
@@ -72,8 +83,7 @@ const Home = () => {
                       : "/profile"
                   }
                 >
-                  {post?.postedBy?.name}
-                  {post?.postedBy?.name ? post?.postedBy?.name : "no name"}
+                  @{post?.postedBy?.name ? post?.postedBy?.name : "no name"}
                 </Link>
               </h5>
 
@@ -85,7 +95,7 @@ const Home = () => {
                   padding: "0 16px",
                 }}
               >
-                {post?.postedBy?.name}
+                {post?.title}
                 {post?.postedBy?._id === user?._id && (
                   <i
                     className='material-icons'
@@ -100,7 +110,9 @@ const Home = () => {
               </h5>
 
               <div className='card-image'>
-                <img src={post?.image} alt={post?.title} />
+                <Link to={`/post-details/${post?._id}`}>
+                  <img src={post?.image} alt={post?.title} />
+                </Link>
               </div>
               <div className='card-content'>
                 {/* Check if the post is liked by the current user or not then show the unlike button */}
@@ -126,75 +138,144 @@ const Home = () => {
                   {post?.likes?.length}{" "}
                   {post?.likes?.length > 1 ? "likes" : "like"}
                 </h6>
-                <h6>{post?.title}</h6>
                 <p>{substring(post?.description)}</p>
-                {post?.comments.map((record) => {
-                  return (
-                    <h6 key={record._id}>
-                      <div
+
+                {/* Toggle comment section depending on the number of comments */}
+                {post?.comments.length > 2 && (
+                  <>
+                    {show ? (
+                      <h6
                         style={{
                           cursor: "pointer",
                           display: "flex",
                           justifyContent: "space-between",
                           alignItems: "center",
                         }}
+                        onClick={() => toggleComment()}
                       >
-                        <div>
-                          <p>
-                            <span
-                              style={{
-                                marginRight: "1rem ",
-                              }}
+                        <span>Hide Comments</span>
+                        <i className='material-icons'>keyboard_arrow_up</i>
+                      </h6>
+                    ) : (
+                      <h6
+                        style={{
+                          cursor: "pointer",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                        onClick={() => toggleComment()}
+                      >
+                        <span>
+                          {post?.comments?.length > 0
+                            ? "Show Comments"
+                            : "No Comments Yet"}
+                        </span>
+                        <i className='material-icons'>keyboard_arrow_down</i>
+                      </h6>
+                    )}
+                  </>
+                )}
+
+                {/* Show first two comments */}
+                {post?.comments.length > 0 && !show && (
+                  <>
+                    {post?.comments.slice(0, 2).map((record) => {
+                      return (
+                        <h6 key={record._id}>
+                          <div
+                            style={{
+                              cursor: "pointer",
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <div>
+                              <p>
+                                <span
+                                  style={{
+                                    marginRight: "1rem ",
+                                  }}
+                                >
+                                  {record?.postedBy?.name}
+                                </span>
+                                <span>{substring(record.comment)}</span>
+                              </p>
+                            </div>
+                            <i
+                              className='material-icons'
+                              onClick={() =>
+                                handleDeleteComment(
+                                  postID,
+                                  record._id as string
+                                )
+                              }
                             >
-                              {record?.postedBy?.name}
-                            </span>
-                            <span>{substring(record.comment)}</span>
-                          </p>
-                        </div>
-                        <i
-                          className='material-icons'
-                          onClick={() =>
-                            handleDeleteComment(postID, record._id as string)
-                          }
-                        >
-                          delete_forever
-                        </i>
-                      </div>
-                    </h6>
-                  );
-                })}
+                              delete_forever
+                            </i>
+                          </div>
+                        </h6>
+                      );
+                    })}
+                  </>
+                )}
+
+                {/* Show all comments */}
+                {show && (
+                  <>
+                    {post?.comments.map((record) => {
+                      return (
+                        <h6 key={record._id}>
+                          <div
+                            style={{
+                              cursor: "pointer",
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <div>
+                              <p>
+                                <span
+                                  style={{
+                                    marginRight: "1rem ",
+                                  }}
+                                >
+                                  {record?.postedBy?.name}
+                                </span>
+                                <span>{substring(record.comment)}</span>
+                              </p>
+                            </div>
+                            <i
+                              className='material-icons'
+                              onClick={() =>
+                                handleDeleteComment(
+                                  postID,
+                                  record._id as string
+                                )
+                              }
+                            >
+                              delete_forever
+                            </i>
+                          </div>
+                        </h6>
+                      );
+                    })}
+                  </>
+                )}
 
                 <form onSubmit={(e) => handleSubmitComment(e, postID)}>
                   <input
                     type='text'
                     name='comment'
+                    placeholder='Add a comment'
                     onChange={(e) => setComment(e.target.value)}
                     value={comment}
                     onClick={() => console.log("clicked")}
                   />
 
                   <input type='hidden' name='postID' value={postID} />
-                  {/* <button
-                    className='btn waves-effect waves-light #64b5f6 blue darken-1'
-                    type='submit'
-                    // onClick={() => {
-                    //   handleComment(comment, postID);
-                    //   setComment("");
-                    // }}
-                  >
-                    comment
-                  </button> */}
-                  {/* <button
-                  className='btn waves-effect waves-light #64b5f6 blue darken-1'
-                  type='submit'
-                  onClick={() => {
-                    handleComment(comment, postID);
-                    // deleteComment(post?._id, post?.comments._id);
-                  }}
-                >
-                  delete comment
-                </button> */}
-                  {/* delete comment */}
                 </form>
               </div>
             </div>

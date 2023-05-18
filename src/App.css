@@ -1,29 +1,29 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap");
 
-a{
+a {
   color: #000;
 }
 
-.brand-logo{
-  font-family: 'Roboto', sans-serif;
+.brand-logo {
+  font-family: "Roboto", sans-serif;
   font-weight: 500;
   font-size: 1.5rem;
 }
 
-.mycard{
+.mycard {
   margin-top: 30px;
   /* padding: 20px; */
-  }
+}
 
-.authCard{
+.authCard {
   margin: 10px auto;
   padding: 20px;
   border-radius: 10px;
   text-align: center;
   max-width: 400px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 }
-.gallery{
+.gallery {
   /* display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 10px;
@@ -32,23 +32,37 @@ a{
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
-   
 }
-.item{
+.item {
   width: 30%;
 }
 
-.home{
-  
+.home {
 }
-.home-card{
+.home-card {
   max-width: 500px;
-  height: max-content;  
+  height: max-content;
   margin: 26px auto;
 }
 
-#toast-container{
+#toast-container {
   top: 10%;
   right: 10%;
   left: auto;
+}
+
+.card{
+  margin: 10px auto;
+  padding: 20px;
+  border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.card-detilas {
+  margin: 10px auto;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 40%;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 }
