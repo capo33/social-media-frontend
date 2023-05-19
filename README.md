@@ -1,4 +1,4 @@
-## Yelp Clone with PERN-STACK
+## Social-Media MERN-STACK
 
 ![alt text](./social-media.png)
 ![alt text](./my-profile.png)
