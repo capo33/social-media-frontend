@@ -15,7 +15,6 @@ const Profile = () => {
   const dispatch = useAppDispatch();
 
   const fromStorage = JSON.parse(localStorage.getItem("pic") || "{}");
-  const avatar = fromStorage?.user?.avatar;
 
   const handleSubmit = async (e: React.FocusEvent<HTMLFormElement>) => {
     e.preventDefault();
