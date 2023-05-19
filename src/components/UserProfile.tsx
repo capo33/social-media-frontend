@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import {
   follow,
@@ -14,16 +14,13 @@ const UserProfile = () => {
   const { user } = useAppSelector((state) => state.user);
   const { user: me } = useAppSelector((state) => state.auth);
 
-  const navigate = useNavigate();
-
   const followerMap = user?.user?.followers?.map(
     (follower: any) => follower?._id
   );
 
   const dispatch = useAppDispatch();
   const token = me?.token;
-  console.log(token);
-
+ 
   useEffect(() => {
     // fetch user data
     dispatch(getAllPosts());

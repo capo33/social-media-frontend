@@ -1,18 +1,40 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
-import { useAppSelector, useAppDispatch } from "../redux/app/store";
 import { myPosts } from "../redux/fetures/Posts/postSlice";
 import { userProfile } from "../redux/fetures/Auth/authSlice";
+import { useAppSelector, useAppDispatch } from "../redux/app/store";
+import axios from "axios";
+import { updateProfilePic } from "../redux/fetures/Users/userSlice";
 
 const Profile = () => {
   const { user } = useAppSelector((state) => state.user);
   const { user: me } = useAppSelector((state) => state.auth);
-  console.log("user", user);
-  console.log("me", me);
-
+  const [image, setImage] = useState<string>("");
+  const [url, setUrl] = useState("");
   const token = user?.user?.token;
-  const { posts } = useAppSelector((state) => state.posts);
   const dispatch = useAppDispatch();
+
+  console.log(" user?.user", user?.user);
+ 
+  const handleSubmit = async (e: React.FocusEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData();
+    data.append("file", image);
+    data.append("upload_preset", "instaclon");
+    data.append("cloud_name", "dkaxbb8gz");
+    // Make a request to cloudinary
+    const res = await axios.post(
+      "https://api.cloudinary.com/v1_1/dkaxbb8gz/image/upload",
+      data
+    );
+    setUrl(res.data.url);
+  };
+
+  useEffect(() => {
+    if (url) {
+      dispatch(updateProfilePic({ avatar: url, token: me?.token }));
+    }
+  }, [url, dispatch, me?._id, me?.token]);
 
   useEffect(() => {
     dispatch(
@@ -23,7 +45,7 @@ const Profile = () => {
     );
     dispatch(myPosts(token));
   }, [dispatch, me?._id, me?.token, token]);
-
+ 
   return (
     <div
       style={{
@@ -42,7 +64,7 @@ const Profile = () => {
         <div>
           <img
             // unspalash
-            src='https://images.unsplash.com/photo-1666358777417-fa9e86eb5ba3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1887&q=80'
+            src={user?.user?.avatar || "https://picsum.photos/200"}
             alt=''
             style={{
               width: "160px",
@@ -50,6 +72,27 @@ const Profile = () => {
               borderRadius: "80px",
             }}
           />
+          <form onSubmit={handleSubmit}>
+            <div className='file-field input-field'>
+              <div className='btn '>
+                <span>Upload Image</span>
+
+                <input
+                  type='file'
+                  onChange={(e) => setImage(e.target.files![0] as any)}
+                />
+              </div>
+              <div className='file-path-wrapper'>
+                <input className='file-path validate' type='text' />
+              </div>
+            </div>
+            <button
+              type='submit'
+              className='btn waves-effect waves-light #64b5f6 blue darken-1'
+            >
+              Submit Post
+            </button>
+          </form>
         </div>
         <div>
           <h4>{user?.user?.name}</h4>

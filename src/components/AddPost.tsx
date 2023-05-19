@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 
-import { useAppDispatch, useAppSelector } from "../redux/app/store";
 import { createPost } from "../redux/fetures/Posts/postSlice";
+import { useAppDispatch, useAppSelector } from "../redux/app/store";
 
 interface PostData {
   title: string;
@@ -75,19 +75,21 @@ const AddPost = () => {
           value={title}
           name='title'
           onChange={handleChange}
+          required
         />
         <input
           type='text'
           placeholder='description'
           value={description}
           name='description'
+          required
           onChange={handleChange}
         />
         <div className='file-field input-field'>
           <div className='btn #64b5f6 blue darken-1'>
             <span>Upload Image</span>
 
-            <input type='file' onChange={handleImageChange} />
+            <input type='file' onChange={handleImageChange} required />
           </div>
           <div className='file-path-wrapper'>
             <input className='file-path validate' type='text' />

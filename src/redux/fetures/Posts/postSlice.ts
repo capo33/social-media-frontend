@@ -42,18 +42,6 @@ const initialState: PostState = {
   message: "",
 };
 
-interface PostPayload {
-  likes?: string[];
-  comments?: comments[];
-  postID?: string;
-  title?: string;
-  description?: string;
-  image?: string;
-  token?: string;
-  toast?: any;
-  navigate?: any;
-}
-
 // get all posts
 export const getAllPosts = createAsyncThunk(
   "posts/getAllPosts",
@@ -236,7 +224,7 @@ export const deletePost = createAsyncThunk(
 // my posts
 export const myPosts = createAsyncThunk(
   "posts/myPosts",
-  async (token:any, { rejectWithValue }) => {
+  async (token: any, { rejectWithValue }) => {
     try {
       const response = await postServices.getMyPosts(token);
 

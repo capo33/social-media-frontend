@@ -1,9 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 import userServices from "./userServices";
-import { Auth, User, userProfileData } from "../../../interfaces/AuthInterface";
-import { Post, getAllPosts } from "../Posts/postSlice";
-import { userProfile as userDataProfile } from "../Auth/authSlice";
+import { Post } from "../Posts/postSlice";
+import { userProfileData } from "../../../interfaces/AuthInterface";
 
 const user = JSON.parse(localStorage.getItem("user") as string);
 
@@ -25,10 +24,6 @@ const initialState: AccountState = {
 
 // *************************** User *************************** //
 // userProfile
-interface UserProfile {
-  id: string;
-  token: string;
-}
 export const userProfile = createAsyncThunk(
   "auth/userProfile",
   async ({ id, token }: any, { rejectWithValue }) => {
@@ -48,11 +43,6 @@ export const userProfile = createAsyncThunk(
 );
 
 // follow
-interface Follow {
-  id: string;
-  token: string;
-  followId: string;
-}
 export const follow = createAsyncThunk(
   "auth/follow",
   async ({ followId, userId, token }: any, thunkAPI) => {
@@ -67,17 +57,12 @@ export const follow = createAsyncThunk(
           error.response.data.message) ||
         error.message ||
         error.toString();
-      return  thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
 
 // unfollow
-interface Unfollow {
-  id: string;
-  token: string;
-  unfollowId: string;
-}
 export const unfollow = createAsyncThunk(
   "auth/unfollow",
   async ({ unfollowId, userId, token }: any, thunkAPI) => {
@@ -101,6 +86,48 @@ export const unfollow = createAsyncThunk(
   }
 );
 
+// update profile
+export const updateProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async ({ userId, token }: any, thunkAPI) => {
+    try {
+      const response = await userServices.updateUserProfile(userId, token);
+      thunkAPI.dispatch(userProfile({ id: userId, token: token } as any));
+      return response;
+    } catch (error: unknown | any) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// update profile pic
+export const updateProfilePic = createAsyncThunk(
+  "auth/updateProfilePic",
+  async ({ avatar, token }: any, thunkAPI) => {
+    try {
+      const response = await userServices.updateProfilePic(avatar, token);
+
+      return response;
+    } catch (error: unknown | any) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// User Slice
 export const userSlice = createSlice({
   name: "user",
   initialState,
@@ -155,8 +182,7 @@ export const userSlice = createSlice({
     // unfollow
     builder.addCase(unfollow.pending, (state) => {
       state.isLoading = true;
-    }
-    );
+    });
     builder.addCase(unfollow.fulfilled, (state, { payload }) => {
       state.isLoading = false;
       // state.user?.user?.followers?.pop();
@@ -179,14 +205,40 @@ export const userSlice = createSlice({
 
       // state.user!.posts = newdata as Post[];
       // state.user!.user!.followers!.push(payload._id as string);
-    }
-    );
+    });
     builder.addCase(unfollow.rejected, (state, { payload }) => {
       state.isLoading = false;
       state.isError = true;
       state.message = payload as string;
-    }
-    );
+    });
+
+    // update profile
+    builder.addCase(updateProfile.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(updateProfile.fulfilled, (state, { payload }) => {
+      state.isLoading = false;
+      state.user = payload;
+    });
+    builder.addCase(updateProfile.rejected, (state, { payload }) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.message = payload as string;
+    });
+
+    // update profile pic
+    builder.addCase(updateProfilePic.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(updateProfilePic.fulfilled, (state, { payload }) => {
+      state.isLoading = false;
+      state.user = payload;
+    });
+    builder.addCase(updateProfilePic.rejected, (state, { payload }) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.message = payload as string;
+    });
   },
 });
 

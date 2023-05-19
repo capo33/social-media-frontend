@@ -11,18 +11,17 @@ const getProfile = async (id: string, token: string) => {
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log("response.data", response.data);
-  
+
   return response.data;
 };
 
 // follow a user
-const followUser = async (followId: string, userId:string, token: string) => {
+const followUser = async (followId: string, userId: string, token: string) => {
   const response = await API.put(
     `/api/v1/users/follow`,
     {
-       followId,
-        userId
+      followId,
+      userId,
     },
     {
       headers: {
@@ -34,12 +33,16 @@ const followUser = async (followId: string, userId:string, token: string) => {
 };
 
 // unfollow a user
-const unfollowUser = async (unfollowId: string, userId:string, token: string) => {
+const unfollowUser = async (
+  unfollowId: string,
+  userId: string,
+  token: string
+) => {
   const response = await API.put(
     `/api/v1/users/unfollow`,
     {
       unfollowId,
-      userId
+      userId,
     },
     {
       headers: {
@@ -64,11 +67,29 @@ const updateUserProfile = async (userId: string, token: string) => {
   return response.data;
 };
 
+// update user profile picture
+const updateProfilePic = async (avatar: string, token: string) => {
+  const response = await API.put(
+    `/api/v1/users/updateProfilePic`,
+    { avatar },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  if (response.data) {
+    localStorage.setItem("pic", JSON.stringify(response.data));
+  }
+
+  return response.data;
+};
 const userServices = {
   getProfile,
   followUser,
   unfollowUser,
   updateUserProfile,
+  updateProfilePic,
 };
 
 export default userServices;

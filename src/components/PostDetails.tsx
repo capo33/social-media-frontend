@@ -1,18 +1,16 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
-import { useAppSelector, useAppDispatch } from "../redux/app/store";
 import { getAllPosts } from "../redux/fetures/Posts/postSlice";
+import { useAppSelector, useAppDispatch } from "../redux/app/store";
 
 const PostDetails = () => {
   const { id } = useParams<{ id: string }>();
 
   const { posts } = useAppSelector((state) => state.posts);
-  const { user } = useAppSelector((state) => state.auth);
+  const post = posts.find((post) => post._id === id);
 
   const dispatch = useAppDispatch();
-  const post = posts.find((post) => post._id === id);
-  console.log("post", post);
 
   React.useEffect(() => {
     dispatch(getAllPosts());
@@ -20,26 +18,54 @@ const PostDetails = () => {
 
   return (
     <div>
-      <h1>Post Details</h1>
       {post && (
-        <div className='card-detilas' key={post._id}>
+        <div className='card' key={post._id} style={{ maxWidth: "50%" }}>
+          {/* Narrow link back */}
+          <div className='card-action'>
+            <Link to='/' className='btn'>
+              Back
+            </Link>
+          </div>
           <div className='card-image'>
             <img
               src={post.image}
               alt={post.title}
-              style={{ maxWidth: "100%", maxHeight: "100%" }}
+              style={{
+                maxWidth: "90%",
+                maxHeight: "50%",
+                margin: "0 auto",
+              }}
             />
-            <span className='card-title'>{post.title}</span>
-            <span className='btn-floating halfway-fab waves-effect waves-light red'>
-              <i className='material-icons'>favorite</i>
-            </span>
+            <p>Posted by {post?.postedBy?.name}</p>
+            <p>
+              Title: <span>{post?.title ? post?.title : "no title"}</span>
+            </p>
           </div>
-          <div className='card-content'>
-            <p>{post.description}</p>
+          <div className=' '>
+            <p>
+              Description:{" "}
+              <span>
+                {post?.description ? post?.description : "no description"}
+              </span>
+            </p>
           </div>
-          <div className='card-action'>
-            <span>{post.likes.length} likes</span>
-            <span>{post.comments.length} comments</span>
+          <div className=''>
+            <p>likes: {post.likes.length}</p>
+
+            <p>
+              Comments:{" "}
+              {post.comments.length ? post.comments.length : "no comments"}
+            </p>
+
+            {/* All comments */}
+            {post.comments.map((comment) => (
+              <div key={comment._id}>
+                <h6>
+                  <span>by@{comment?.postedBy?.name}</span>
+                </h6>
+                <p>{comment.comment}</p>
+              </div>
+            ))}
           </div>
         </div>
       )}

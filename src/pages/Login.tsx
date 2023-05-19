@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
-import Spinner from "../components/Spinner";
 
+import Spinner from "../components/Spinner";
 import { AuthUser } from "../interfaces/AuthInterface";
-import { useAppDispatch, useAppSelector } from "../redux/app/store";
 import { login } from "../redux/fetures/Auth/authSlice";
+import { useAppDispatch, useAppSelector } from "../redux/app/store";
 
 const Login = () => {
   const [formData, setFormData] = useState<AuthUser>({

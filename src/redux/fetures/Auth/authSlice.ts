@@ -28,8 +28,6 @@ export const register = createAsyncThunk(
   async ({ formData, toast, navigate }: Auth, { rejectWithValue }) => {
     try {
       const response = await authServices.register(formData);
-      console.log("response.data", response);
-
       navigate("/");
       toast.success(response?.message);
       if (response) {
@@ -78,10 +76,6 @@ export const logout = createAsyncThunk("auth/logout", async () => {
 
 // *************************** User *************************** //
 // userProfile
-interface UserProfile {
-  id: string;
-  token: string;
-}
 export const userProfile = createAsyncThunk(
   "auth/userProfile",
   async ({ id, token }: any, { rejectWithValue }) => {
@@ -99,7 +93,6 @@ export const userProfile = createAsyncThunk(
     }
   }
 );
-
 
 const authSlice = createSlice({
   name: "auth",

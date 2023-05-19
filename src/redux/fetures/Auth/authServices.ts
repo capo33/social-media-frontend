@@ -1,29 +1,10 @@
-import axios, { InternalAxiosRequestConfig } from "axios";
+import axios from "axios";
+
 import { AuthUser } from "../../../interfaces/AuthInterface";
-// import { AuthUser } from "../../../interfaces/AuthInterface";
-
-// interceptors are functions that run before a request is made and after a response is received from the server
-// API.interceptors.request.use((req: AxiosRequestConfig) => {
-//   if (localStorage.getItem("profile")) {
-//     req.headers.Authorization = `Bearer ${
-//       JSON.parse(localStorage.getItem("profile")).token
-//     }`;
-//   }
-
-//   return req;
-// });
 
 const API = axios.create({
   baseURL: "http://localhost:5000/",
 });
-
-// set up the interceptor to add the token to the request (typescript)
-// API.interceptors.request.use((req: InternalAxiosRequestConfig) => {
-//   if (localStorage.getItem("profile")) {
-//     req.headers.Authorization = `Bearer ${localStorage.getItem("profile")}`;
-//   }
-//   return req;
-// });
 
 // *************************** Auth *************************** //
 // register
