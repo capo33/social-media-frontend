@@ -82,7 +82,7 @@ const Home = () => {
             const postID = post?._id;
 
             return (
-              <div className='col   m4' key={post?._id}>
+              <div className='col m12' key={post?._id}>
                 <div className='card home-card' key={post?._id}>
                   <h6>
                     <Link
@@ -216,17 +216,19 @@ const Home = () => {
                                     <span>{substring(record.comment)}</span>
                                   </p>
                                 </div>
-                                <i
-                                  className='material-icons'
-                                  onClick={() =>
-                                    handleDeleteComment(
-                                      postID,
-                                      record._id as string
-                                    )
-                                  }
-                                >
-                                  delete_forever
-                                </i>
+                                {record?.postedBy?._id === user?._id && (
+                                  <i
+                                    className='material-icons'
+                                    onClick={() =>
+                                      handleDeleteComment(
+                                        postID,
+                                        record._id as string
+                                      )
+                                    }
+                                  >
+                                    delete_forever
+                                  </i>
+                                )}
                               </div>
                             </h6>
                           );

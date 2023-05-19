@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { logout } from "../redux/fetures/Auth/authSlice";
@@ -23,7 +22,7 @@ const Header = () => {
     width: "50px",
     height: "50px",
     borderRadius: "50%",
-    background: "#ccc",
+    background: "#555",
     margin: "5px",
   };
 
@@ -31,7 +30,7 @@ const Header = () => {
     <nav>
       <div className='nav-wrapper container'>
         <a href='/' className='brand-logo left'>
-          Logo
+          Social App
         </a>
         <ul id='nav-mobile' className='right hide-on-med-and-down'>
           <li>

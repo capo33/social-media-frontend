@@ -14,8 +14,9 @@ const Profile = () => {
   const token = user?.user?.token;
   const dispatch = useAppDispatch();
 
-  console.log(" user?.user", user?.user);
- 
+  const fromStorage = JSON.parse(localStorage.getItem("pic") || "{}");
+  const avatar = fromStorage?.user?.avatar;
+
   const handleSubmit = async (e: React.FocusEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData();
@@ -45,7 +46,7 @@ const Profile = () => {
     );
     dispatch(myPosts(token));
   }, [dispatch, me?._id, me?.token, token]);
- 
+
   return (
     <div
       style={{
@@ -64,7 +65,7 @@ const Profile = () => {
         <div>
           <img
             // unspalash
-            src={user?.user?.avatar || "https://picsum.photos/200"}
+            src={user?.user?.avatar || me?.avatar || fromStorage?.user?.avatar}
             alt=''
             style={{
               width: "160px",
